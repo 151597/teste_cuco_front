@@ -13,7 +13,7 @@
                         hide-default-footer
                         class="elevation-1"
                         @page-count="pageCount = $event">
-                                <template v-slot:item.actions="{ item }">
+                                <template v-slot:[`item.actions`]="{ item }">
                                         <v-btn icon @click="loadClient(item)"><v-icon>mdi-pencil</v-icon></v-btn>
                                         <v-btn icon @click="remove(item)"><v-icon>mdi-delete</v-icon></v-btn>
                                 </template>
