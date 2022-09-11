@@ -64,20 +64,13 @@ export default {
         }
     },
     watch: {
+        //cria as linhas da tabela
         rows(){
 			this.initFilters()
-		},
-		statusSelected(val){
-            if(val.length > 0){
-                this.activeFilters = {
-                        'status': val
-                }
-            }else{
-                return this.initFilters()
-            }
-        }
+		}
     },
     methods:{
+        // inicializa a opção de busca na tabela
         initFilters() {
             for (var col in this.filters) {
                 this.filters[col] = this.rows.map((d) => { return d[col] }).filter(
@@ -94,9 +87,11 @@ export default {
 				this.rows = res.data
             })
         },
+        // faz o reload dos clientes
 		resetClient(){
             this.loadClients()
         },
+        // exclui cliente com base no id
 		remove(remove){
             const id = remove.id
             Swal.fire({
@@ -124,6 +119,7 @@ export default {
                 }
             })
         },
+        //carrega os valores no modal emitindo um evento para o pai component
 		loadClient(client){
 			console.log(client)
 			this.panel = 0

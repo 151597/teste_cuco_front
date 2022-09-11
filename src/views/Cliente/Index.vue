@@ -133,8 +133,6 @@ export default {
 			activePicker: null,
 			menu: false,
 			date: '',
-			menu1: false,
-			menu2: false,
 			perSelected: {text: 10, value: 10},
 			search: '',
 			itemsPerPage: [
@@ -149,9 +147,11 @@ export default {
 		}
 	},
 	watch: {
+		//menu do datepicker
 		menu (val) {
 			val && setTimeout(() => (this.activePicker = 'YEAR'))
 		},
+		//verifica se o campo cpf foi preenchido e é valido
 		date () {
 			this.client.dateFormatted = this.formatDate(this.date)
 			if(this.validarCPF(this.client.cpf) && this.client.cpf != "" && this.client.nome != "" && this.date != ""){
@@ -174,6 +174,7 @@ export default {
 			},
 			deep: true
 		},
+		//verifica se o campo de cpf mudou
 		'client.cpf'(newVal){
 			if(newVal && this.oldCpf){
 				if(newVal.replace(/[^\d]/g, "") !== this.oldCpf.replace(/[^\d]/g, "")){
@@ -185,20 +186,16 @@ export default {
 		},
     },
     methods: {
+		//salva a data no campo datepicker
 		saveDate (date) {
 			this.$refs.menu.save(date)
 		},
+		//formata a data para o padrão pt-BR
 		formatDate (date) {
 			if (!date) return null
 
 			const [year, month, day] = date.split('-')
 			return `${day}/${month}/${year}`
-		},
-		parseDate (date) {
-			if (!date) return null
-
-			const [month, day, year] = date.split('/')
-			return `${year}-${month.padStart(2, '0')}-${day.padStart(2, '0')}`
 		},
 		validarCPF(cpf) {
 			if(cpf){
@@ -256,6 +253,7 @@ export default {
 				return false
 			}
 		},
+		//resetar os dados
 		resetClient(){
 			this.mode = 'saveClient'
 			this.phoneNumberMask = '(##) #####-####'
@@ -266,6 +264,7 @@ export default {
             this.$refs.listagem.resetClient()
 			this.dialog = false
         },
+		//metodo responsável por persistir os dados na base
 		async saveClient(){
 			let cpfExists = false
 			
@@ -306,15 +305,14 @@ export default {
 					text: 'CPF já cadastrado!',
 				})
 			}
-
-	
-
         },
+		//metodo responsável por atualizar os dados na base
 		updateDialog(event){
 			this.mode = "updateClient"
 			this.dialog = true
 			this.oldCpf = event.cpf
 			this.client = event
+			//atualiza a mascara do campo telefone
 			this.$nextTick(() => {
 				this.$refs.telefone.reset()
 				this.phoneNumberMask = '(##) #####-####'
@@ -327,13 +325,7 @@ export default {
 				return res.data.exists
 			})
 		}
-    },
-	computed: {
-      computedDateFormatted () {
-        return this.formatDate(this.date)
-      },
     }
-
 }
 </script>
 
