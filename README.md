@@ -1,4 +1,4 @@
-# teste-cuco_front
+# teste_cuco_front
 
 ## Install
 
