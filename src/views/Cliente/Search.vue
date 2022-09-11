@@ -1,7 +1,15 @@
 <template>
     <div>
-        <v-row justify="end">
-            <v-col cols="12" md="3" lg="3" xs="12">
+        <v-row justify="space-between">
+            <v-col cols="3" md="3" lg="2" xs="12">
+                <v-select
+                :items="itemsPerPageProp"
+                v-model="perSelectedProp"
+                 @input="$emit('perSelectedProp', perSelectedProp)"
+                label="Items por Página"
+                ></v-select>
+            </v-col>
+            <v-col cols="6" md="3" lg="3" xs="12">
                 <v-text-field
                     label="Pesquisa"
                     v-model="searchProp"

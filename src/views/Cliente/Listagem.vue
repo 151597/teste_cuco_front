@@ -9,7 +9,7 @@
                         :headers="headers"
                         :items="rows"
                         :page.sync="page"
-                        :items-per-page="perSelected.value"
+                        :items-per-page="perSelectedProp"
                         hide-default-footer
                         class="elevation-1"
                         @page-count="pageCount = $event">
@@ -34,18 +34,11 @@ import axios from 'axios'
 import Swal from 'sweetalert2'
 export default {
     name: 'ClienteListagem',
-    props: [ 'search', 'dialog', 'client'],
+    props: [ 'search', 'dialog', 'client', 'perSelectedProp'],
     data(){
         return {
             filters: { 'status': [] },
 			activeFilters: {},
-			perSelected: {text: 10, value: 10},
-			itemsPerPage: [
-					{text: 5, value: 5},
-					{text: 10, value: 10},
-					{text: 15, value: 15},
-					{text: 'All', value: -1}
-			],
 			page: 1,
 			pageCount: 0,
 			headers: [
@@ -64,6 +57,9 @@ export default {
         }
     },
     watch: {
+        perSelectedProp(val){
+            console.log(val)
+        },
         //cria as linhas da tabela
         rows(){
 			this.initFilters()

@@ -94,9 +94,9 @@
 				<Search
 				:search="search"
 				@searchProp="search = $event"
-				:perSelected="perSelected"
+				@perSelectedProp="perSelectedProp = parseInt($event, 10)"
 				:itemsPerPage="itemsPerPage"/>
-				<Listagem ref="listagem" :search="search" :dialog="dialog" :client="client" @update-dialog="updateDialog($event)"/>
+				<Listagem ref="listagem" :search="search" :perSelectedProp="perSelectedProp" :dialog="dialog" :client="client" @update-dialog="updateDialog($event)"/>
 			</v-card-text>
 		</v-card>
 	</div>
@@ -133,8 +133,8 @@ export default {
 			activePicker: null,
 			menu: false,
 			date: '',
-			perSelected: {text: 10, value: 10},
 			search: '',
+			perSelectedProp: 5,
 			itemsPerPage: [
 				{text: 5, value: 5},
 				{text: 10, value: 10},
