@@ -143,7 +143,8 @@ export default {
 				{text: 15, value: 15},
 				{text: 'All', value: -1}
 			],
-			phoneNumberMask: ''
+			phoneNumberMask: '',
+			changeCpf: false
 		}
 	},
 	watch: {
@@ -169,7 +170,16 @@ export default {
 				}
 			},
 			deep: true
-		}
+		},
+		'user.cpf'(newVal, oldVal){
+			if(newVal && oldVal){
+				if(newVal.replace(/[^\d]/g, "") !== oldVal.replace(/[^\d]/g, "")){
+					this.changeCpf = true
+				}else{
+					this.changeCpf = false
+				}
+			}
+		},
     },
     methods: {
 		saveDate (date) {
@@ -254,13 +264,13 @@ export default {
 			this.dialog = false
         },
 		async saveUser(){
-			let result
-			const url = `${baseApiUrl}/users/${this.user.cpf.replace(/[^\d]/g, "")}`
-			result = await axios.get(url).then((res) => {
-				return res.data.exists
-			})
+			let cpfExists = false
+			
+			if(this.mode === 'saveUser' || this.changeCpf){
+				cpfExists = await this.cpfExists()
+			}
 
-			if(!result || this.mode == 'updateUser'){
+			if(!cpfExists){
 				const method = this.user.id ? 'put' : 'post'
 				const id = this.user.id ? `/${this.user.id}` : ''
 				this.user.telefone = this.user.telefone.replace(/[^\d]/g, "")
@@ -306,6 +316,12 @@ export default {
 				this.phoneNumberMask = '(##) #####-####'
 			})
 			this.date = moment(event.data_nascimento, 'DD/MM/YYYY').format('YYYY-MM-DD')
+		},
+		async cpfExists(){
+			const url = `${baseApiUrl}/users/${this.user.cpf.replace(/[^\d]/g, "")}`
+			return await axios.get(url).then((res) => {
+				return res.data.exists
+			})
 		}
     },
 	computed: {
