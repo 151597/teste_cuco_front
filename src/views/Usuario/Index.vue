@@ -144,7 +144,8 @@ export default {
 				{text: 'All', value: -1}
 			],
 			phoneNumberMask: '',
-			changeCpf: false
+			changeCpf: false,
+			oldCpf: ''
 		}
 	},
 	watch: {
@@ -153,7 +154,7 @@ export default {
 		},
 		date () {
 			this.user.dateFormatted = this.formatDate(this.date)
-			if(this.user.cpf != "" && this.user.nome != "" && this.date != "" && this.user.telefone){
+			if(this.validarCPF(this.user.cpf) && this.user.cpf != "" && this.user.nome != "" && this.date != ""){
 				this.isDisabled = false
 			}else{
 				this.isDisabled = true
@@ -161,19 +162,21 @@ export default {
 		},
 		user: {
 			handler(val){
-				if(val.cpf && val.nome && val.dateFormatted && val.telefone){
-					if(val.cpf != "" && val.nome != "" && val.dateFormatted != "" && val.telefone){
+				if(val.cpf && val.nome && val.dateFormatted){
+					if(this.validarCPF(val.cpf) && val.cpf != "" && val.nome != "" && val.dateFormatted != ""){
 						this.isDisabled = false
 					}else{
 						this.isDisabled = true
 					}
+				}else{
+					this.isDisabled = true
 				}
 			},
 			deep: true
 		},
-		'user.cpf'(newVal, oldVal){
-			if(newVal && oldVal){
-				if(newVal.replace(/[^\d]/g, "") !== oldVal.replace(/[^\d]/g, "")){
+		'user.cpf'(newVal){
+			if(newVal && this.oldCpf){
+				if(newVal.replace(/[^\d]/g, "") !== this.oldCpf.replace(/[^\d]/g, "")){
 					this.changeCpf = true
 				}else{
 					this.changeCpf = false
@@ -273,7 +276,7 @@ export default {
 			if(!cpfExists){
 				const method = this.user.id ? 'put' : 'post'
 				const id = this.user.id ? `/${this.user.id}` : ''
-				this.user.telefone = this.user.telefone.replace(/[^\d]/g, "")
+				this.user.telefone = this.user.telefone ? this.user.telefone.replace(/[^\d]/g, "") : ''
 				this.user.cpf = this.user.cpf.replace(/[^\d]/g, "")
 				this.user.dateFormatted = moment(this.user.dateFormatted, 'DD/MM/YYYY').format('YYYY-MM-DD')
 
@@ -310,6 +313,7 @@ export default {
 		updateDialog(event){
 			this.mode = "updateUser"
 			this.dialog = true
+			this.oldCpf = event.cpf
 			this.user = event
 			this.$nextTick(() => {
 				this.$refs.telefone.reset()
