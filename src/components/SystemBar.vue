@@ -18,7 +18,7 @@
             </v-list-item>
             <!-- MENUS -->
             <v-list dense nav>
-                <Usuario />
+                <Cliente />
             </v-list>
         </v-navigation-drawer>
 
@@ -55,11 +55,11 @@
 </template>
 
 <script>
-import Usuario from './menus/Usuario'
+import Cliente from './menus/Cliente'
 export default {
     name: 'systemBar',
     components: {
-        Usuario
+        Cliente
     },
     data(){
         return {

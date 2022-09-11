@@ -14,7 +14,7 @@
                         class="elevation-1"
                         @page-count="pageCount = $event">
                                 <template v-slot:item.actions="{ item }">
-                                        <v-btn icon @click="loadUser(item)"><v-icon>mdi-pencil</v-icon></v-btn>
+                                        <v-btn icon @click="loadClient(item)"><v-icon>mdi-pencil</v-icon></v-btn>
                                         <v-btn icon @click="remove(item)"><v-icon>mdi-delete</v-icon></v-btn>
                                 </template>
                 </v-data-table>
@@ -33,8 +33,8 @@ import { baseApiUrl } from '@/global'
 import axios from 'axios'
 import Swal from 'sweetalert2'
 export default {
-    name: 'UsuarioListagem',
-    props: [ 'search', 'dialog', 'user'],
+    name: 'ClienteListagem',
+    props: [ 'search', 'dialog', 'client'],
     data(){
         return {
             filters: { 'status': [] },
@@ -50,7 +50,7 @@ export default {
 			pageCount: 0,
 			headers: [
 					{
-						text: 'Usuário',
+						text: 'Cliente',
 						align: 'start',
 						sortable: false,
 						value: 'nome'
@@ -87,15 +87,15 @@ export default {
             // TODO restore previous activeFilters before add/remove item
             this.activeFilters = Object.assign({}, this.filters)
 		},
-		loadUsers(){
-            const url = `${baseApiUrl}/users`
+		loadClients(){
+            const url = `${baseApiUrl}/clients`
             axios.get(url).then(res => {
-                this.users = res.data
+                this.clients = res.data
 				this.rows = res.data
             })
         },
-		resetUser(){
-            this.loadUsers()
+		resetClient(){
+            this.loadClients()
         },
 		remove(remove){
             const id = remove.id
@@ -109,10 +109,10 @@ export default {
                 cancelButtonText: 'Cancelar'
             }).then((result) => {
                 if (result.isConfirmed) {
-                    axios.delete(`${baseApiUrl}/users/${id}`)
+                    axios.delete(`${baseApiUrl}/clients/${id}`)
                         .then(() => {
                             Swal.fire('Excluido!', '', 'success')
-                            this.resetUser()
+                            this.resetClient()
                         })
                         .catch(() => {
                             Swal.fire({
@@ -124,15 +124,15 @@ export default {
                 }
             })
         },
-		loadUser(user){
-			console.log(user)
+		loadClient(client){
+			console.log(client)
 			this.panel = 0
 			this.isDisabled = false
-            this.$emit('update-dialog', { ...user })
+            this.$emit('update-dialog', { ...client })
         }
     },
     mounted(){
-        this.loadUsers()
+        this.loadClients()
     }
 }
 </script>

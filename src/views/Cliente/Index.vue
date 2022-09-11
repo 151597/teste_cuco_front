@@ -14,7 +14,7 @@
 								color="primary"
 								v-bind="attrs"
 								v-on="on"
-								@click="resetUser"
+								@click="resetClient"
 							>Criar</v-btn>
 							</template>
 							<template>
@@ -26,14 +26,14 @@
 								<v-card-text>
 									<v-row>
 										<v-col cols="12" md="12" sm="12" xs="12">
-											<v-form ref="form" id="cadUsuarios" @submit.prevent="submit">
-												<input type="hidden" v-model="user.id">
+											<v-form ref="form" @submit.prevent="submit">
+												<input type="hidden" v-model="client.id">
 												<v-row>
 													<v-col cols="12" md="6" sm="12" xs="12">
-															<v-text-field prepend-icon="mdi-account" label="Nome Completo" name="nome" type="text" v-model="user.nome" :rules="rules"></v-text-field>
+															<v-text-field prepend-icon="mdi-account" label="Nome Completo" name="nome" type="text" v-model="client.nome" :rules="rules"></v-text-field>
 													</v-col>
 													<v-col cols="12" md="6" sm="12" xs="12">
-															<v-text-field label="CPF" name="cpf" type="cpf" v-model="user.cpf" 
+															<v-text-field label="CPF" name="cpf" type="cpf" v-model="client.cpf" 
 															prepend-icon="mdi-card-account-details" v-mask="'###.###.###-##'" :rules="rulesCpf"></v-text-field>
 													</v-col>
 												</v-row>
@@ -49,7 +49,7 @@
 															>
 															<template v-slot:activator="{ on, attrs }">
 																<v-text-field
-																v-model="user.dateFormatted"
+																v-model="client.dateFormatted"
 																label="Data de Nascimento"
 																prepend-icon="mdi-calendar"
 																readonly
@@ -70,11 +70,11 @@
 													<v-col cols="12" md="6" sm="12" xs="12">
 														<v-text-field ref="telefone" prepend-icon="mdi-phone" label="Telefone" 
 															name="telefone" type="text" v-mask="phoneNumberMask"
-															v-model="user.telefone" :rules="rulesTelefone"></v-text-field>
+															v-model="client.telefone" :rules="rulesTelefone"></v-text-field>
 													</v-col>
 												</v-row>
 												<v-row>
-													<v-btn @click="saveUser" :disabled="isDisabled" color="primary">Salvar</v-btn>
+													<v-btn @click="saveClient" :disabled="isDisabled" color="primary">Salvar</v-btn>
 												</v-row>
 											</v-form>
 										</v-col>
@@ -83,7 +83,7 @@
 								<v-card-actions class="justify-end">
 								<v-btn
 									text
-									@click="resetUser"
+									@click="resetClient"
 								>Fechar</v-btn>
 								</v-card-actions>
 							</v-card>
@@ -96,7 +96,7 @@
 				@searchProp="search = $event"
 				:perSelected="perSelected"
 				:itemsPerPage="itemsPerPage"/>
-				<Listagem ref="listagem" :search="search" :dialog="dialog" :user="user" @update-dialog="updateDialog($event)"/>
+				<Listagem ref="listagem" :search="search" :dialog="dialog" :client="client" @update-dialog="updateDialog($event)"/>
 			</v-card-text>
 		</v-card>
 	</div>
@@ -110,16 +110,16 @@ import axios from 'axios'
 import moment from 'moment'
 import Swal from 'sweetalert2'
 export default {
-	nome: 'UsuarioIndex',
+	nome: 'ClienteIndex',
 	components: { Search, Listagem },
 	data(){
 		return {
-			mode: 'saveUser',
+			mode: 'saveClient',
 			dialog: false,
 			panel: 1,
 			showPassword: false,
 			isDisabled: true,
-			user: {},
+			client: {},
 			rules: [
 				value => !!value || 'Obrigatório.'
 			],
@@ -153,14 +153,14 @@ export default {
 			val && setTimeout(() => (this.activePicker = 'YEAR'))
 		},
 		date () {
-			this.user.dateFormatted = this.formatDate(this.date)
-			if(this.validarCPF(this.user.cpf) && this.user.cpf != "" && this.user.nome != "" && this.date != ""){
+			this.client.dateFormatted = this.formatDate(this.date)
+			if(this.validarCPF(this.client.cpf) && this.client.cpf != "" && this.client.nome != "" && this.date != ""){
 				this.isDisabled = false
 			}else{
 				this.isDisabled = true
 			}
 		},
-		user: {
+		client: {
 			handler(val){
 				if(val.cpf && val.nome && val.dateFormatted){
 					if(this.validarCPF(val.cpf) && val.cpf != "" && val.nome != "" && val.dateFormatted != ""){
@@ -174,7 +174,7 @@ export default {
 			},
 			deep: true
 		},
-		'user.cpf'(newVal){
+		'client.cpf'(newVal){
 			if(newVal && this.oldCpf){
 				if(newVal.replace(/[^\d]/g, "") !== this.oldCpf.replace(/[^\d]/g, "")){
 					this.changeCpf = true
@@ -256,40 +256,40 @@ export default {
 				return false
 			}
 		},
-		resetUser(){
-			this.mode = 'saveUser'
+		resetClient(){
+			this.mode = 'saveClient'
 			this.phoneNumberMask = '(##) #####-####'
-            this.user = {}
+            this.client = {}
             this.date = ''
 			this.isDisabled = true
 			this.$refs.form.reset()
-            this.$refs.listagem.resetUser()
+            this.$refs.listagem.resetClient()
 			this.dialog = false
         },
-		async saveUser(){
+		async saveClient(){
 			let cpfExists = false
 			
-			if(this.mode === 'saveUser' || this.changeCpf){
+			if(this.mode === 'saveClient' || this.changeCpf){
 				cpfExists = await this.cpfExists()
 			}
 
 			if(!cpfExists){
-				const method = this.user.id ? 'put' : 'post'
-				const id = this.user.id ? `/${this.user.id}` : ''
-				this.user.telefone = this.user.telefone ? this.user.telefone.replace(/[^\d]/g, "") : ''
-				this.user.cpf = this.user.cpf.replace(/[^\d]/g, "")
-				this.user.dateFormatted = moment(this.user.dateFormatted, 'DD/MM/YYYY').format('YYYY-MM-DD')
+				const method = this.client.id ? 'put' : 'post'
+				const id = this.client.id ? `/${this.client.id}` : ''
+				this.client.telefone = this.client.telefone ? this.client.telefone.replace(/[^\d]/g, "") : ''
+				this.client.cpf = this.client.cpf.replace(/[^\d]/g, "")
+				this.client.dateFormatted = moment(this.client.dateFormatted, 'DD/MM/YYYY').format('YYYY-MM-DD')
 
-				axios[method](id === '' ? `${baseApiUrl}/users` : `${baseApiUrl}/users${id}`, this.user)
+				axios[method](id === '' ? `${baseApiUrl}/clients` : `${baseApiUrl}/clients${id}`, this.client)
 					.then(() => {
 						Swal.fire({
 							position: 'center',
 							icon: 'success',
-							title: 'Usuário salvo com sucesso!',
+							title: 'Cliente salvo com sucesso!',
 							showConfirmButton: false,
 							timer: 1500
 						}).then(() => {
-							this.resetUser()
+							this.resetClient()
 						})
 					})
 					.catch(() => {
@@ -311,10 +311,10 @@ export default {
 
         },
 		updateDialog(event){
-			this.mode = "updateUser"
+			this.mode = "updateClient"
 			this.dialog = true
 			this.oldCpf = event.cpf
-			this.user = event
+			this.client = event
 			this.$nextTick(() => {
 				this.$refs.telefone.reset()
 				this.phoneNumberMask = '(##) #####-####'
@@ -322,7 +322,7 @@ export default {
 			this.date = moment(event.data_nascimento, 'DD/MM/YYYY').format('YYYY-MM-DD')
 		},
 		async cpfExists(){
-			const url = `${baseApiUrl}/users/${this.user.cpf.replace(/[^\d]/g, "")}`
+			const url = `${baseApiUrl}/clients/${this.client.cpf.replace(/[^\d]/g, "")}`
 			return await axios.get(url).then((res) => {
 				return res.data.exists
 			})
